@@ -1,0 +1,158 @@
+(cs336-basics) PS D:\assignment1-basics> uv run python run_tinystories_bpe.py data\TinyStoriesV2-GPT4-valid.txt                                                            
+输入: data\TinyStoriesV2-GPT4-valid.txt  (21.5 MB)                                          
+vocab_size: 10000  special_tokens: ['<|endoftext|>']
+   
+开始训练 ...                                                                                
+Time taken for merges: 23.784510135650635
+   
+============================================================
+训练耗时     : 37.6 秒  (0.63 分钟)
+峰值内存 RSS : 0.12 GB
+vocab 大小   : 10000
+merges 数量  : 9743
+============================================================
+
+最长 token 长度 : 15 字节
+最长 token 内容 : b' accomplishment'
+可读形式        :  accomplishment
+
+最长的 10 个 token：
+    15 字节  ' accomplishment'
+    14 字节  ' uncomfortable'
+    14 字节  ' compassionate'
+    14 字节  ' understanding'
+    14 字节  ' neighbourhood'
+    14 字节  ' Unfortunately'
+    14 字节  ' determination'
+    14 字节  ' encouragement'
+    13 字节  '<|endoftext|>'
+    13 字节  ' disappointed'
+
+token 长度分布（长度: 个数）：
+     1: 256
+     2: 358
+     3: 926
+     4: 1484
+     5: 1842
+     6: 1664
+     7: 1264
+     8: 1006
+     9: 594
+    10: 321
+    11: 176
+    12: 75
+    13: 26
+    14: 7
+    15: 1
+
+已序列化到 bpe_tinystories_out/  -> vocab.json, merges.txt, vocab.pkl, merges.pkl
+
+------------------------------------------------------------
+
+
+Training took 0.6 minutes and peaked at 0.1 GB of RAM; the longest token in the vocabulary is 15 bytes (' accomplishment'), which [does/does not] make sense because ...
+------------------------------------------------------------
+(cs336-basics) PS D:\assignment1-basics> uv run python run_owt_bpe.py data\owt_valid.txt
+Input : data\owt_valid.txt  (276.6 MB)
+vocab : 32000   special: ['<|endoftext|>']
+
+Training ...
+Time taken for merges: 65499.924850702286
+
+============================================================
+Time        : 65613.4 s  (1093.56 min)
+Peak RSS    : 2.39 GB
+vocab size  : 32000
+merges      : 31743
+============================================================
+
+Longest token : 64 bytes
+Content       : b'----------------------------------------------------------------'
+Readable      : '----------------------------------------------------------------'
+
+Top-10 longest tokens:
+    64  '----------------------------------------------------------------'
+    64  '________________________________________________________________'
+    32  '--------------------------------'
+    32  '________________________________'
+    32  '................................'
+    24  '————————'
+    19  ' disproportionately'
+    19  ' telecommunications'
+    18  ' environmentalists'
+    17  ' responsibilities'
+
+Length distribution (len: count):
+     1: 256
+     2: 1356
+     3: 3119
+     4: 4610
+     5: 4773
+     6: 4194
+     7: 3757
+     8: 3109
+     9: 2464
+    10: 1784
+    11: 1204
+    12: 702
+    13: 356
+    14: 206
+    15: 68
+    16: 26
+    17: 7
+    18: 1
+    19: 2
+    24: 1
+
+Serialized to bpe_owt_out/  -> vocab.json, merges.txt, vocab.pkl, merges.pkl
+
+------------------------------------------------------------
+COMPARISON with TinyStories tokenizer (if available)
+------------------------------------------------------------
+TinyStories vocab : 10000
+OpenWebText vocab : 32000
+Shared tokens     : 7094
+
+Tokens ONLY in OpenWebText (web/news flavour):
+   '----------------------------------------------------------------'
+   '________________________________________________________________'
+   '................................'
+   '________________________________'
+   '--------------------------------'
+   '————————'
+   ' disproportionately'
+   ' telecommunications'
+   ' environmentalists'
+   ' unconstitutional'
+   ' cryptocurrencies'
+   ' misunderstanding'
+   ' characterization'
+   ' responsibilities'
+   ' counterterrorism'
+
+Tokens ONLY in TinyStories (children's story flavour):
+   ' strawberries'
+   ' thundercloud'
+   ' caterpillars'
+   ' refrigerator'
+   ' veterinarian'
+   ' motorcycles'
+   ' grasshopper'
+   ' grandparent'
+   ' butterflies'
+   ' Thermometer'
+   ' storekeeper'
+   ' cauliflower'
+   ' firefighter'
+   ' screwdriver'
+   ' caterpillar'
+
+Avg token length  TinyStories: 5.76 bytes
+Avg token length  OpenWebText: 6.31 bytes
+
+============================================================
+Answer template for (a):
+Training took 1093.6 minutes and peaked at 2.4 GB; the longest token is 64 bytes ('----------------------------------------------------------------'), which ... 
+Answer template for (b):
+Compared to TinyStories, the OpenWebText tokenizer spends its capacity on ...
+============================================================
