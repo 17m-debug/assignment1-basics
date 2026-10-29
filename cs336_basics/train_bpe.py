@@ -1,7 +1,14 @@
 import regex as re
 import time
 from collections import Counter
+import heapq
 
+class Rev:
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __lt__(self, other):
+        return self.obj > other.obj
 
 def merge_in_tuple(pt, a, b):
     i = 0
@@ -15,16 +22,45 @@ def merge_in_tuple(pt, a, b):
             i += 1
     return tuple(out)
 
-def run_merges(pair_counts, pair_to_ids, pretokens, freqs, num_merges):
+# def run_merges(pair_counts, pair_to_ids, pretokens, freqs, num_merges):
+#     merges = []
+#     for _ in range(num_merges):
+#         if not pair_counts: break
+#         max_pair = max(pair_counts, key=lambda p: (pair_counts[p], p))
+#         merges.append(max_pair)
+#         affected = list(pair_to_ids[max_pair])
+#         for pid in affected:
+#             for p, k in Counter(zip(pretokens[pid], pretokens[pid][1:])).items():
+#                 pair_counts[p] -= k * freqs[pid]
+#                 if pair_counts[p] == 0:
+#                     del pair_counts[p]
+#                 pair_to_ids[p].discard(pid)
+#             new_pt = merge_in_tuple(pretokens[pid], max_pair[0], max_pair[1])
+#             pretokens[pid] = new_pt
+#             for p, k in Counter(zip(new_pt, new_pt[1:])).items():
+#                 pair_counts[p] = pair_counts.get(p, 0) + k * freqs[pid]
+#                 pair_to_ids.setdefault(p, set()).add(pid)
+#     return merges
+
+def run_merges(pair_counts, heaq_pairs, pair_to_ids, pretokens, freqs, num_merges):
     merges = []
     for _ in range(num_merges):
-        if not pair_counts: break
-        max_pair = max(pair_counts, key=lambda p: (pair_counts[p], p))
+        if not heaq_pairs: break
+        num_pair, max_pair = heapq.heappop(heaq_pairs)
+        max_pair = max_pair.obj
+        while num_pair != -pair_counts.get(max_pair, 0):
+            if not heaq_pairs: break
+            num_pair, max_pair = heapq.heappop(heaq_pairs)
+            max_pair = max_pair.obj
+        if num_pair == 0:
+            break
         merges.append(max_pair)
         affected = list(pair_to_ids[max_pair])
-        for pid in affected:
+        heaq4push = set()
+        for pid in affected:            
             for p, k in Counter(zip(pretokens[pid], pretokens[pid][1:])).items():
                 pair_counts[p] -= k * freqs[pid]
+                heaq4push.add(p)
                 if pair_counts[p] == 0:
                     del pair_counts[p]
                 pair_to_ids[p].discard(pid)
@@ -32,9 +68,12 @@ def run_merges(pair_counts, pair_to_ids, pretokens, freqs, num_merges):
             pretokens[pid] = new_pt
             for p, k in Counter(zip(new_pt, new_pt[1:])).items():
                 pair_counts[p] = pair_counts.get(p, 0) + k * freqs[pid]
+                heaq4push.add(p)
                 pair_to_ids.setdefault(p, set()).add(pid)
+        for item in heaq4push:
+            heapq.heappush(heaq_pairs, (-pair_counts.get(item, 0), Rev(item)))
     return merges
-    
+
 
 def run_vocab(special_tokens, merges):
     vocab = {i: bytes([i]) for i in range(256)}
@@ -74,7 +113,10 @@ def train_bpe(input_path, vocab_size, special_tokens):
             p = (pretokens[i][j-1], pretokens[i][j])
             pair_counts[p] = pair_counts.get(p, 0) + freqs[i]
             pair_to_ids.setdefault(p, set()).add(i)
-    merges = run_merges(pair_counts, pair_to_ids, pretokens, freqs, num_merges)
+    heaq_pairs = [(-count, Rev(p)) for p, count in pair_counts.items()]
+    heapq.heapify(heaq_pairs)
+    merges = run_merges(pair_counts, heaq_pairs, pair_to_ids, pretokens, freqs, num_merges)
+    # merges = run_merges(pair_counts, pair_to_ids, pretokens, freqs, num_merges)
 
     t2 = time.time()
     print(f"Time taken for merges: {t2 - t1}")
